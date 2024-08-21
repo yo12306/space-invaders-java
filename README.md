@@ -14,5 +14,3 @@ This project is an exploration of my skills and knowledge in Object-Oriented Pro
 
 <img src="/bin/doc/si-doc1.png" alt="Screenshot of the space invaders" width="500"/>
 <img src="/bin/doc/si-doc2.png" alt="Screenshot of the space invaders" width="500"/>
-
-## Installation
