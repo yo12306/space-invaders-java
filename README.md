@@ -10,4 +10,9 @@ This project is an exploration of my skills and knowledge in Object-Oriented Pro
 ## Features
 
 - **OOP Principles:** The project is designed following fundamental OOP principles such as encapsulation, inheritance, polymorphism, and abstraction.
-- **Java Swing GUI:** The graphical user interface is built using the `Java Swing` package.
+- **Java Swing GUI:** The graphical user interface is built using the `java swing` package.
+
+<img src="/bin/doc/si-doc1.png" alt="Screenshot of the space invaders" width="500"/>
+<img src="/bin/doc/si-doc2.png" alt="Screenshot of the space invaders" width="500"/>
+
+## Installation
