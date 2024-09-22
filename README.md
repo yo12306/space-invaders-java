@@ -14,3 +14,7 @@ This project is an exploration of my skills and knowledge in Object-Oriented Pro
 
 <img src="/bin/doc/si-doc1.png" alt="Screenshot of the space invaders" width="500"/>
 <img src="/bin/doc/si-doc2.png" alt="Screenshot of the space invaders" width="500"/>
+
+## Game Assets
+Chris Courses: https://www.youtube.com/watch?v=MCVU0w73uKI
+RyiSnow: https://www.youtube.com/watch?v=OF41XmRk2wo&list=PL_QPQmz5C6WUF-pOQDsbsKbaBZqXj4qSq
