@@ -21,6 +21,6 @@ This project is an exploration of my skills and knowledge in Object-Oriented Pro
 - Fonts: https://fontsgeek.com/fonts/Gamer-Bold#google_vignette
 - Wallpaper: https://wallhere.com/en/wallpaper/2246866
 - Bullet: https://es.pixilart.com/art/sd-sr20a0e45741daws3?ft=collabs&ft_id=
-- Spaceship: https://www.cleanpng.com/png-asteroids-outpost-defender-miner-cube-pro-sprite-v-680746/
-- Monster: Looking for credit
+- Spaceship: https://millionthvector.blogspot.com/p/free-sprites.html
+- Monster: https://millionthvector.blogspot.com/p/free-sprites.html
 - Blackhole : Looking for credit
