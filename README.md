@@ -23,5 +23,6 @@ This project is an exploration of my skills and knowledge in Object-Oriented Pro
 - Bullet: https://es.pixilart.com/art/sd-sr20a0e45741daws3?ft=collabs&ft_id=
 - Spaceship: [millionthvector](https://millionthvector.blogspot.com/p/free-sprites.html)
 - Monster: [millionthvector](https://millionthvector.blogspot.com/p/free-sprites.html)
-- The images (Spaceship and Monster ) that used in this project are licensed under the [Creative Commons Attribution 4.0 International License (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/)
-- Blackhole : Looking for credit
+- Blackhole : [millionthvector](https://millionthvector.blogspot.com/p/free-sprites.html)
+- The images (Spaceship, Monster and Blackhole) that used in this project are licensed under the [Creative Commons Attribution 4.0 International License (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/)
+
