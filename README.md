@@ -20,7 +20,7 @@ This project is an exploration of my skills and knowledge in Object-Oriented Pro
 - RyiSnow: [youtube](https://www.youtube.com/watch?v=OF41XmRk2wo&list=PL_QPQmz5C6WUF-pOQDsbsKbaBZqXj4qSq)
 - Fonts: [fontsgeek](https://fontsgeek.com/fonts/Gamer-Bold#google_vignette)
 - Wallpaper: https://wallhere.com/en/wallpaper/2246866
-- Bullet: https://es.pixilart.com/art/sd-sr20a0e45741daws3?ft=collabs&ft_id=
+- Bullet: [https://es.pixilart.com/art/sd-sr20a0e45741daws3?ft=collabs&ft_id=](https://opengameart.org/content/bullet-collection-1-m484)
 - Spaceship: [millionthvector](https://millionthvector.blogspot.com/p/free-sprites.html)
 - Monster: [millionthvector](https://millionthvector.blogspot.com/p/free-sprites.html)
 - Blackhole : [millionthvector](https://millionthvector.blogspot.com/p/free-sprites.html)
