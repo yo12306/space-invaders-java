@@ -11,7 +11,6 @@ import javax.imageio.ImageIO;
 
 import main.GamePanel;
 import main.KeyHandler;
-import main.UtilityTool;
 
 public class Spaceship extends Entity{
 
@@ -60,9 +59,7 @@ public class Spaceship extends Entity{
 	}
 	
 	public void getImage() {
-		UtilityTool uTool = new UtilityTool();
 		entity = setupImage("/spaceship/SpaceshipI.png");
-		entity = uTool.scaleImage(entity, gamePanel.TILE_SIZE, gamePanel.TILE_SIZE);
 	}
 	
 	public void update() {
@@ -176,9 +173,13 @@ public class Spaceship extends Entity{
 		score = 0;
 		kill = 0;
 		
-		for(int i = 0; i < 12; i++) {
+		for(int i = 0; i < gamePanel.monster.length; i++) {
 			gamePanel.monster[i] = null;
 		}
+		gamePanel.projectileList.clear();
+		invincible = false;
+		invincibleCounter = 0;
+		isShooting = false;
     }
 	
 	public void draw(Graphics2D g2) {

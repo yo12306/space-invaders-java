@@ -32,8 +32,7 @@ public class UI {
 	public UI(GamePanel gamePanel) {
 		this.gamePanel = gamePanel;
 		
-		InputStream is = getClass().getResourceAsStream("/font/Gamer Bold.ttf");
-		try {
+		try(InputStream is = getClass().getResourceAsStream("/font/Gamer Bold.ttf")) {
 			gamerBold = Font.createFont(Font.TRUETYPE_FONT, is);
 		} catch (FontFormatException e) {
 			e.printStackTrace();
@@ -51,6 +50,18 @@ public class UI {
 	public void addMessage(String text) {
 		message.add(text);
 		messageCounter.add(0);
+	}
+
+	public void update() {
+		for(int i = message.size() - 1; i >= 0; i--) {
+			int counter = messageCounter.get(i) + 1;
+			if(counter > 50) {
+				message.remove(i);
+				messageCounter.remove(i);
+			} else {
+				messageCounter.set(i, counter);
+			}
+		}
 	}
 	public void draw(Graphics2D g2) {
 		this.g2 = g2;
@@ -180,14 +191,7 @@ public class UI {
 				g2.setColor(Color.white);
 				g2.drawString(message.get(i), messageX, messageY);
 			
-				int counter = messageCounter.get(i) + 1;
-				messageCounter.set(i, counter);
 				messageY += 50;
-				
-				if(messageCounter.get(i) > 50) {
-					message.remove(i);
-					messageCounter.remove(i);
-				}
 			}
 		}
 	}

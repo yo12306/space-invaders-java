@@ -26,6 +26,5 @@ public class Projectile extends Entity {
 		if(y < -gamePanel.TILE_SIZE) {
 			alive = false;
 		}
-		System.out.println(gamePanel.projectileList.size());
 	}
 }

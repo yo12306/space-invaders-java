@@ -33,78 +33,47 @@ public class CollisionChecker {
 	}
 	
 	public boolean checkSpaceship(Entity entity) {
-		boolean contactSpaceship = false;
-		
-		entity.solidArea.x = entity.x + entity.solidArea.x;
-		entity.solidArea.y = entity.y + entity.solidArea.y;
-		
-		gamePanel.spaceship.solidArea.x = gamePanel.spaceship.x + gamePanel.spaceship.solidArea.x;
-		gamePanel.spaceship.solidArea.y = gamePanel.spaceship.y + gamePanel.spaceship.solidArea.y;
-		
-		switch(entity.direction) {
-		case "up":
-			entity.solidArea.y -= entity.velocity;
-			break;
-		case "down":
-			entity.solidArea.y += entity.velocity;
-			break;
-		case "left":
-			entity.solidArea.x -= entity.velocity;
-			break;
-		case "right":
-			entity.solidArea.x += entity.velocity;
-			break;
-		}
-		
-		if(entity.solidArea.intersects(gamePanel.spaceship.solidArea)) {
+		boolean contactSpaceship = intersects(entity, nextX(entity), nextY(entity), gamePanel.spaceship);
+		if(contactSpaceship) {
 			entity.collisionOn = true;
-			contactSpaceship = true;
 		}
-		
-		entity.solidArea.x = entity.solidAreaDefaultX;
-		entity.solidArea.y = entity.solidAreaDefaultY;
-		gamePanel.spaceship.solidArea.x = gamePanel.spaceship.solidAreaDefaultX;
-		gamePanel.spaceship.solidArea.y = gamePanel.spaceship.solidAreaDefaultY;
-	
 		return contactSpaceship;
 	}
+
 	public int checkEntity(Entity entity, Entity[] target) {
 		int index = 999;
-		
+		int nextX = nextX(entity);
+		int nextY = nextY(entity);
 		for(int i = 0; i < target.length; i++) {
-			if(target[i] != null) {
-				entity.solidArea.x = entity.x + entity.solidArea.x;
-				entity.solidArea.y = entity.y + entity.solidArea.y;
-				
-				target[i].solidArea.x = target[i].x + target[i].solidArea.x;
-				target[i].solidArea.y = target[i].y + target[i].solidArea.y;
-				
-				switch(entity.direction) {
-				case "up":
-					entity.solidArea.y -= entity.velocity;
-					break;
-				case "down":
-					entity.solidArea.y += entity.velocity;
-					break;
-				case "left":
-					entity.solidArea.x -= entity.velocity;
-					break;
-				case "right":
-					entity.solidArea.x += entity.velocity;
-					break;
-				}
-				
-				if(entity.solidArea.intersects(target[i].solidArea)) {
-					index = i;
-				}
-				
-				entity.solidArea.x = entity.solidAreaDefaultX;
-				entity.solidArea.y = entity.solidAreaDefaultY;
-				
-				target[i].solidArea.x = target[i].solidAreaDefaultX;
-				target[i].solidArea.y = target[i].solidAreaDefaultY;
+			Entity candidate = target[i];
+			if(candidate != null && candidate != entity && candidate.alive && !candidate.dying
+					&& intersects(entity, nextX, nextY, candidate)) {
+				index = i;
 			}
 		}
 		return index;
+	}
+
+	private int nextX(Entity entity) {
+		int x = entity.x + entity.solidArea.x;
+		if("left".equals(entity.direction)) x -= entity.velocity;
+		if("right".equals(entity.direction)) x += entity.velocity;
+		return x;
+	}
+
+	private int nextY(Entity entity) {
+		int y = entity.y + entity.solidArea.y;
+		if("up".equals(entity.direction)) y -= entity.velocity;
+		if("down".equals(entity.direction)) y += entity.velocity;
+		return y;
+	}
+
+	private boolean intersects(Entity entity, int x, int y, Entity target) {
+		int targetX = target.x + target.solidArea.x;
+		int targetY = target.y + target.solidArea.y;
+		return entity.solidArea.width > 0 && entity.solidArea.height > 0
+				&& target.solidArea.width > 0 && target.solidArea.height > 0
+				&& x < targetX + target.solidArea.width && x + entity.solidArea.width > targetX
+				&& y < targetY + target.solidArea.height && y + entity.solidArea.height > targetY;
 	}
 }

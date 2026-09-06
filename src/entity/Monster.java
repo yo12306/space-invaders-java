@@ -5,12 +5,13 @@ import java.util.Random;
 import main.GamePanel;
 
 public class Monster extends Entity {
+	private static final Random random = new Random();
 
 	public Monster(GamePanel gamePanel) {
 		super(gamePanel);
 		
-		velocityX = new Random().nextInt(6) + 1;
-		velocityY = new Random().nextInt(6) + 1;
+		velocityX = random.nextInt(6) + 1;
+		velocityY = random.nextInt(6) + 1;
 		
 		solidArea.x = 0;
 		solidArea.y = 0;

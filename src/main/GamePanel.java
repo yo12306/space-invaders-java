@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 
 import entity.Entity;
 import entity.MonsterI;
@@ -18,7 +20,7 @@ import entity.MonsterV;
 import entity.MonsterVI;
 import entity.Spaceship;
 
-public class GamePanel extends JPanel implements Runnable{
+public class GamePanel extends JPanel {
 	// 16x16 TILES
 	public final int ORIGINAL_TILE_SIZE = 16;
 	public final int SCALE = 4;
@@ -44,7 +46,10 @@ public class GamePanel extends JPanel implements Runnable{
 	public CollisionChecker cChecker = new CollisionChecker(this);
 	public AssetSetter aSetter = new AssetSetter(this);
 	public UI ui = new UI(this);
-	Thread gameThread;
+	private final long updateInterval = 1000000000L / FPS;
+	private final Timer gameTimer = new Timer(1000 / FPS, event -> tick());
+	private long lastUpdateTime;
+	private long accumulatedTime;
 	
 	// BACKGROUND
 	Background background = new Background(this);
@@ -53,10 +58,10 @@ public class GamePanel extends JPanel implements Runnable{
 	public Spaceship spaceship = new Spaceship(this, keyHandler);
 	public Entity monster[] = new Entity[20];
 	public Entity obj[] = new Entity[10];
-	public ArrayList<Entity> entityList = new ArrayList<Entity>();
 	public ArrayList<Entity> projectileList = new ArrayList<Entity>();
 	private static final int MAX_MONSTERS = 12;
     private int monsterCount = 0;
+	private final Random random = new Random();
     
 	// GAME STATE
 	public int gameState;
@@ -82,81 +87,87 @@ public class GamePanel extends JPanel implements Runnable{
 		gameState = TITLE_STATE;
 	}
 	
-	public void startGameThread() {
-		gameThread = new Thread(this);
-		gameThread.start();
+	public void startGameLoop() {
+		if(!SwingUtilities.isEventDispatchThread()) {
+			SwingUtilities.invokeLater(this::startGameLoop);
+			return;
+		}
+		if(gameTimer.isRunning()) {
+			return;
+		}
+		// Load audio and the bullet sprite before gameplay can start.
+		backgroundMusic.preload(0);
+		soundEffect.preload(1, 2, 3, 4, 5, 6);
+		UtilityTool.loadImage("/bullets/normalBullet.png", TILE_SIZE/2, TILE_SIZE/2);
+		accumulatedTime = 0;
+		lastUpdateTime = System.nanoTime();
+		gameTimer.start();
 	}
-	
+
+	public void stopGameLoop() {
+		if(!SwingUtilities.isEventDispatchThread()) {
+			SwingUtilities.invokeLater(this::stopGameLoop);
+			return;
+		}
+		gameTimer.stop();
+		backgroundMusic.close();
+		soundEffect.close();
+	}
+
 	@Override
-	public void run() {
-		// DRAWING 1 ROUND TAKES TIME
-		// 0.01666 SECONDS
-		double drawInterval = 1000000000 / FPS;
-		
-		// SUPPOSE THAT YOU HAVE JUST DRAW. THE NEXT TIME YOU DRAW IS (THE TIME YOU DREW + THE TIME YOU DREW 1 ROUND TAKES)
-		double nextDrawTime = System.nanoTime() + drawInterval;
-		
-		while(gameThread != null) {
-			// UPDATE INFORMATION SUCH AS CHARACTER POSITION
+	public void removeNotify() {
+		stopGameLoop();
+		super.removeNotify();
+	}
+
+	private void tick() {
+		long now = System.nanoTime();
+		advanceFrame(now - lastUpdateTime);
+		lastUpdateTime = now;
+		repaint();
+	}
+
+	void advanceFrame(long elapsedNanos) {
+		// Fixed 60 Hz simulation; discard excess backlog after a long stall.
+		accumulatedTime = Math.min(accumulatedTime + elapsedNanos, updateInterval * 5);
+		while(accumulatedTime >= updateInterval) {
 			update();
-			
-			// DRAW THE SCREEN WITH THE UPDATED INFORMATION
-			repaint();
-			
-			try {
-				double remainingTime = nextDrawTime - System.nanoTime();
-				// CHANGE TO MILLISECONDS
-				remainingTime = remainingTime/1000000;
-				
-				if(remainingTime < 0) {
-					// IF UPDATE AND REPAINT TAKE LONGER THAN DRAWINTERVAL (YOU CAN SEE THAT REMAININGTIME IS NEGATIVE, IT MEANS THAT THE CURRENT TIME IS PAST THE EXPECTED REDRAW TIME, SO SLEEP = 0)
-					remainingTime = 0;
-				}
-				Thread.sleep((long) remainingTime);
-				nextDrawTime += drawInterval;
-			}catch(InterruptedException e) {
-				e.printStackTrace();
-			}
+			accumulatedTime -= updateInterval;
 		}
 	}
 	
 	public void update() {
+		if(gameState != TITLE_STATE) {
+			background.update();
+		}
 		if(gameState == PLAY_STATE) {
 			spaceship.update();
-			
-	        monsterCount = countAliveMonsters();
-	        if (monsterCount < MAX_MONSTERS) {
-	            createNewMonster();
-	        }
+			ui.update();
 	        
 			for(int i = 0; i < monster.length; i++) {
 				if(monster[i] != null) {
-					if(monster[i].dying == false) {
+					if(monster[i].alive && !monster[i].dying) {
 						monster[i].update();
 					}
-					if(monster[i].dying == true) {
+					if(!monster[i].alive || monster[i].dying) {
 						monster[i] = null;
 					}
 				}
 			}
 			
+	        monsterCount = countAliveMonsters();
+	        if (monsterCount < MAX_MONSTERS) {
+	            createNewMonster();
+	        }
+
 			for(int i = 0; i < projectileList.size(); i++) {
-				if(projectileList.get(i) != null) {
-					if(projectileList.get(i).alive == true) {
-						projectileList.get(i).update();
-					}
-					if(projectileList.get(i).alive == false) {
-						projectileList.remove(i);
-					}
+				Entity projectile = projectileList.get(i);
+				if(projectile != null && projectile.alive) {
+					projectile.update();
 				}
 			}
-			
-			// CHECK IF THERE IS A DEAD MONSTER, IF DEAD REMOVE IT FROM ENTITYLIST
-		    for (int i = 0; i < monster.length; i++) {
-		        if (monster[i] != null && !monster[i].alive) {
-		            entityList.remove(monster[i]);
-		        }
-		    }
+			// Compact once, preserving shot order and updating every projectile.
+			projectileList.removeIf(projectile -> projectile == null || !projectile.alive);
 		}
 		if(gameState == PAUSE_STATE) {
 			// NOTHING
@@ -181,7 +192,6 @@ public class GamePanel extends JPanel implements Runnable{
 
         // CREATE A NEW MONSTER (SELECT A MONSTER FROM THE MONSTER CLASS YOU CREATED)
         Entity newMonster = null;
-        Random random = new Random();
         int monsterType = random.nextInt(6) + 1;
 
         switch (monsterType) {
@@ -212,7 +222,6 @@ public class GamePanel extends JPanel implements Runnable{
             for (int i = 0; i < monster.length; i++) {
                 if (monster[i] == null) {
                     monster[i] = newMonster;
-                    entityList.add(newMonster);
                     monsterCount++;
                     break;
                 }
@@ -222,7 +231,7 @@ public class GamePanel extends JPanel implements Runnable{
 	
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		Graphics2D g2 = (Graphics2D)g;
+		Graphics2D g2 = (Graphics2D)g.create();
 		
 		// DEBUG
 		long drawStart = 0;
@@ -240,35 +249,27 @@ public class GamePanel extends JPanel implements Runnable{
 			// BACKGROUND
 			background.draw(g2);
 			
-			// ADD MONSTER TO THE LIST
+			// Draw directly in layer order without building a second entity list.
 			for(int i = 0; i < monster.length; i++) {
-				if(monster[i] != null) {
-					entityList.add(monster[i]);
+				if(monster[i] != null && monster[i].alive && !monster[i].dying) {
+					monster[i].draw(g2);
 				}
 			}
 			
 			// PLAYER
-			entityList.add(spaceship);
+			spaceship.draw(g2);
 			
 			for(int i = 0; i < obj.length; i++) {
 				if(obj[i] != null) {
-					entityList.add(obj[i]);
+					obj[i].draw(g2);
 				}
 			}
 			
 			for(int i = 0; i < projectileList.size(); i++) {
 				if(projectileList.get(i) != null) {
-					entityList.add(projectileList.get(i));
+					projectileList.get(i).draw(g2);
 				}
 			}
-			
-			// DRAW ENTITY
-			for(int i = 0; i < entityList.size(); i++) {
-				entityList.get(i).draw(g2);
-			}
-			
-			// EMPTY ENTITY LIST (OTHERWISE THE ENTIT LIST GETS LARGER IN EVERY LOOP)
-			entityList.clear();
 			
 			// UI
 			ui.draw(g2);
@@ -280,7 +281,6 @@ public class GamePanel extends JPanel implements Runnable{
 			long passed = drawEnd - drawStart;
 			g2.setColor(Color.white);
 			g2.drawString("Draw Time: " + passed, 10, 400);
-			System.out.println("Draw Time: " + passed);
 		}
 		g2.dispose();
 	}

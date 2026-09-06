@@ -17,10 +17,10 @@ public class NormalBullet extends Projectile {
 	}
 	
 	public void getImage() {
-		entity = setupImage("/bullets/normalBullet.png");
+		entity = setupImage("/bullets/normalBullet.png", gamePanel.TILE_SIZE/2, gamePanel.TILE_SIZE/2);
 	}
 	
 	public void draw(Graphics2D g2) {	
-		g2.drawImage(entity, x, y, gamePanel.TILE_SIZE/2, gamePanel.TILE_SIZE/2, null);
+		g2.drawImage(entity, x, y, null);
 	}
 }

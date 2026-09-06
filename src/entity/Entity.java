@@ -5,10 +5,6 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
-
 import main.GamePanel;
 import main.UtilityTool;
 
@@ -49,9 +45,6 @@ public class Entity {
 	public int hp;
 	public int attack;
 	
-	// UTOOL SCALE IMAGE
-	public UtilityTool uTool = new UtilityTool();
-	
 	public Entity(GamePanel gamePanel) {
 		this.gamePanel = gamePanel;
 	}
@@ -62,8 +55,7 @@ public class Entity {
 		setAction();
 		
 		collisionOn = false;
-		gamePanel.cChecker.checkTile(this);
-		gamePanel.cChecker.checkEntity(this, gamePanel.monster);
+		// Monsters handle wall bounces in setAction; they do not collide with each other.
 		boolean contackSpaceship = gamePanel.cChecker.checkSpaceship(this);
 		
 		if(contackSpaceship == true) {
@@ -73,16 +65,18 @@ public class Entity {
 				gamePanel.spaceship.invincible = true;
 			}
 		}
+		if(hpBarOn && ++hpBarCounter > 600) {
+			hpBarCounter = 0;
+			hpBarOn = false;
+		}
 	}
 	
 	public BufferedImage setupImage(String pathName) {
-		BufferedImage image = null;	
-		try {
-			image = ImageIO.read(getClass().getResourceAsStream(pathName));
-		} catch(IOException e) {
-			e.printStackTrace();
-		}
-		return image;
+		return setupImage(pathName, gamePanel.TILE_SIZE, gamePanel.TILE_SIZE);
+	}
+
+	public BufferedImage setupImage(String pathName, int width, int height) {
+		return UtilityTool.loadImage(pathName, width, height);
 	}
 
 	public void draw(Graphics2D g2) {
@@ -98,12 +92,6 @@ public class Entity {
 			g2.fillRect(x - 1, y - 16, gamePanel.TILE_SIZE + 2, 7);
 			g2.setColor(new Color(255, 0, 30));
 			g2.fillRect(x, y - 15, (int)hpBarValue, 5);
-			hpBarCounter++;
-			
-			if(hpBarCounter > 600) {
-				hpBarCounter = 0;
-				hpBarOn = false;
-			}
 		}		
 		g2.drawImage(entity, x, y, null);
 	}

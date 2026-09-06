@@ -17,6 +17,5 @@ public class MonsterIV extends Monster {
 	
 	public void getImage() {
 		entity = setupImage("/monster/monsterIV.png");
-		entity = uTool.scaleImage(entity, gamePanel.TILE_SIZE, gamePanel.TILE_SIZE);
 	}
 }
